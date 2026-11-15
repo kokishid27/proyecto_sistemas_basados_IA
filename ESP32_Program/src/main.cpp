@@ -1,3 +1,6 @@
+// Trabajen sobre esta branchpara desarrollar el proyecto, no sobre main
+// Descarguen la extensión de gitlens para VSCode, para poder ver los cambios 
+// que hizo cada uno.
 #include <Arduino.h>
 
 // put function declarations here:
