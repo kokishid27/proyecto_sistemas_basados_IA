@@ -10,9 +10,9 @@
 #include <ESP_I2S.h>
 
 // Definición de pines 
-#define I2S_WS 25
-#define I2S_SD 32
-#define I2S_SCK 33
+#define I2S_WS 4
+#define I2S_SD 5
+#define I2S_SCK 6
 
 // Crear el objeto I2S
 I2SClass i2s;
