@@ -1,0 +1,10 @@
+{
+  "name": "ei-reconocimiento_de_voz_robot",
+  "version": "1.0.5",
+  "build": {
+    "srcFilter": [
+      "+<*>",
+      "-<edge-impulse-sdk/porting/espressif/esp-dsp/>"
+    ]
+  }
+}
