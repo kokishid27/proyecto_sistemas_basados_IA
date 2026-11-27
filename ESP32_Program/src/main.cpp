@@ -55,16 +55,19 @@ void loop() {
 
 #else
 // ================= MODO INFERENCIA (EDGE IMPULSE) =================
-#define EI_CLASSIFIER_SLICES_PER_MODEL_WINDOW 4
-#define NUM_SAMPLES 128
-#define HPF_CUTOFF_HZ 70.0f  // Frecuencia de corte para eliminar DC offset y ruido grave sin afectar la voz
+#define EI_CLASSIFIER_SLICES_PER_MODEL_WINDOW 2
+#define NUM_SAMPLES 128       // Tamaño del buffer de captura  
+#define HPF_CUTOFF_HZ 60.0f  // Frecuencia de corte para eliminar DC offset y ruido grave sin afectar la voz
 
+
+// esta estructura se usa para manejar los buffers de audio y el estado de la inferencia
 typedef struct {
-    int16_t *buffers[2];
-    uint8_t buf_select;
-    uint8_t buf_ready;
+    int16_t *buffers[2]; // contiene punteros a memoria dinamica que se inicializa en microphone_inference_start()
+    uint8_t buf_select; // al crear se dos punteros que tienen direccion hacia memoria dinamica de 2 buffers, este valor indica cual de los dos buffers se esta llenando actualmente
+    volatile uint8_t buf_ready;   // volatile porque se lee/escribe en dos núcleos distintos
     uint32_t buf_count;
     uint32_t n_samples;
+    volatile uint32_t overrun_count; // Contador de veces que se llenó un buffer sin haber leído el anterior
 } inference_t;
 
 static inference_t inference;
@@ -103,6 +106,12 @@ static void audio_inference_callback(uint32_t n_bytes, int16_t *sampleBuffer) {
         inference.buffers[inference.buf_select][inference.buf_count++] = filtered_sample;
 
         if (inference.buf_count >= inference.n_samples) {
+            // Si buf_ready sigue en 1 aquí, significa que el loop() aún no termina la inferencia anterior
+            if (inference.buf_ready == 1) {
+
+                inference.overrun_count = inference.overrun_count + 1;
+            }
+
             inference.buf_select ^= 1;
             inference.buf_count = 0;
             inference.buf_ready = 1;
@@ -122,6 +131,7 @@ static void capture_samples(void *arg) {
             vTaskDelay(pdMS_TO_TICKS(1));
         }
     }
+
     vTaskDelete(NULL);
 }
 
@@ -141,6 +151,7 @@ static bool microphone_inference_start(void) {
     inference.buf_count = 0;
     inference.n_samples = EI_CLASSIFIER_SLICE_SIZE;
     inference.buf_ready = 0;
+    inference.overrun_count = 0;
     record_status = true;
 
     BaseType_t res = xTaskCreatePinnedToCore(
@@ -193,7 +204,10 @@ void setup() {
         while (1);
     }
 
-    Serial.println("Inferencia de voz iniciada. Escuchando...");
+    // Cálculo del tiempo máximo disponible antes de que se llene un búfer
+    float window_ms = ((float)EI_CLASSIFIER_SLICE_SIZE / (float)EI_CLASSIFIER_FREQUENCY) * 1000.0f;
+    Serial.printf("Inferencia iniciada. Tamaño buffer: %d muestras (%.1f ms disponibles por ventana)\n",
+                  EI_CLASSIFIER_SLICE_SIZE, window_ms);
 }
 
 void loop() {
@@ -206,11 +220,21 @@ void loop() {
     signal.get_data = &microphone_audio_signal_get_data;
     ei_impulse_result_t result = { 0 };
 
+    // --- INICIO DE MEDICIÓN ---
+    uint32_t t_start = micros();
+
     EI_IMPULSE_ERROR r = run_classifier_continuous(&signal, &result, debug_nn);
+
+    uint32_t t_total_us = micros() - t_start;
+    // --- FIN DE MEDICIÓN ---
+
     if (r != EI_IMPULSE_OK) {
         Serial.printf("Error en el clasificador (%d)\n", r);
         return;
     }
+
+    // Revisa si durante la ejecución de run_classifier_continuous se volvió a llenar otro búfer
+    bool had_overrun = (inference.buf_ready == 1) || (inference.overrun_count > 0);
 
     float max_val = 0.0f;
     const char *detected_label = "";
@@ -221,11 +245,11 @@ void loop() {
             detected_label = result.classification[ix].label;
         }
     }
-
-    // Filtra comandos con confianza >= 90% (ignora ruido o clase desconocida)
-    if (max_val >= 0.85f && strcmp(detected_label, "noise") != 0 && strcmp(detected_label, "unknown") != 0) {
-        Serial.printf("Comando detectado: %s (%.2f%%)\n", detected_label, max_val * 100.0f);
-    }
+    Serial.printf("probabilidades bloque [%.2f]  caja [%.2f]    cono [%.2f]  ruido [%.2f]  \n", result.classification[0].value, result.classification[1].value, result.classification[2].value, result.classification[3].value );
+    // Filtra comandos con confianza >= 85% (ignora ruido o clase desconocida)
+   /* if (max_val >= 0.85f && strcmp(detected_label, "noise") != 0 && strcmp(detected_label, "unknown") != 0) {
+        Serial.printf(">>> Comando detectado: %s (%.2f%%)\n", detected_label, max_val * 100.0f);
+    }*/
 }
 
-#endif
+#endif // MAIN_CAPTURA_H

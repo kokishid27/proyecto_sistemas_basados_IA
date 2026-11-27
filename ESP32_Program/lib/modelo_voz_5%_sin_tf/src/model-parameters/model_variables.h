@@ -42,25 +42,25 @@
 #include <stdint.h>
 #include <vector>
 #include "model_metadata.h"
-#include "tflite-model/tflite_learn_1166698_12_compiled.h"
+#include "tflite-model/tflite_learn_1166698_14_compiled.h"
 #include "edge-impulse-sdk/classifier/ei_model_types.h"
 #include "edge-impulse-sdk/classifier/inferencing_engines/engines.h"
 #include "edge-impulse-sdk/classifier/postprocessing/ei_postprocessing_common.h"
 
 const char* ei_classifier_inferencing_categories_1166698_1[] = { "bloque", "caja", "cono", "ruido" };
 
-ei_dsp_named_axis_t ei_dsp_config_1166698_11_named_axes[] = {
+ei_dsp_named_axis_t ei_dsp_config_1166698_20_named_axes[] = {
     { .name = "Signal", .axis = 0 }
 };
-size_t ei_dsp_config_1166698_11_named_axes_size = 1;
-EI_CLASSIFIER_DSP_AXES_INDEX_TYPE ei_dsp_config_1166698_11_axes[] = { 0 };
-const uint32_t ei_dsp_config_1166698_11_axes_size = 1;
-ei_dsp_config_mfcc_t ei_dsp_config_1166698_11 = {
-    11, // uint32_t blockId
+size_t ei_dsp_config_1166698_20_named_axes_size = 1;
+EI_CLASSIFIER_DSP_AXES_INDEX_TYPE ei_dsp_config_1166698_20_axes[] = { 0 };
+const uint32_t ei_dsp_config_1166698_20_axes_size = 1;
+ei_dsp_config_mfcc_t ei_dsp_config_1166698_20 = {
+    20, // uint32_t blockId
     4, // int implementationVersion
     1, // int length of axes
-    ei_dsp_config_1166698_11_named_axes, // named axes
-    ei_dsp_config_1166698_11_named_axes_size, // size of the named axes array
+    ei_dsp_config_1166698_20_named_axes, // named axes
+    ei_dsp_config_1166698_20_named_axes_size, // size of the named axes array
     13, // int num_cepstral
     0.025f, // float frame_length
     0.02f, // float frame_stride
@@ -75,55 +75,55 @@ ei_dsp_config_mfcc_t ei_dsp_config_1166698_11 = {
 
 const uint8_t ei_dsp_blocks_1166698_1_size = 1;
 ei_model_dsp_t ei_dsp_blocks_1166698_1[ei_dsp_blocks_1166698_1_size] = {
-    { // DSP block 11
-        11,
+    { // DSP block 20
+        20,
         637, // output size
         &extract_mfcc_features, // DSP function pointer
-        (void*)&ei_dsp_config_1166698_11, // pointer to config struct
-        ei_dsp_config_1166698_11_axes, // array of offsets into the input stream, one for each axis
-        ei_dsp_config_1166698_11_axes_size, // number of axes
+        (void*)&ei_dsp_config_1166698_20, // pointer to config struct
+        ei_dsp_config_1166698_20_axes, // array of offsets into the input stream, one for each axis
+        ei_dsp_config_1166698_20_axes_size, // number of axes
         1, // version
         nullptr, // factory function
         nullptr, // data normalization config
     }
 };
-const ei_config_tflite_eon_graph_t ei_config_graph_1166698_12 = {
+const ei_config_tflite_eon_graph_t ei_config_graph_1166698_14 = {
     .implementation_version = 1,
-    .model_init = &tflite_learn_1166698_12_init,
-    .model_invoke = &tflite_learn_1166698_12_invoke,
-    .model_reset = &tflite_learn_1166698_12_reset,
-    .model_input = &tflite_learn_1166698_12_input,
-    .model_output = &tflite_learn_1166698_12_output,
+    .model_init = &tflite_learn_1166698_14_init,
+    .model_invoke = &tflite_learn_1166698_14_invoke,
+    .model_reset = &tflite_learn_1166698_14_reset,
+    .model_input = &tflite_learn_1166698_14_input,
+    .model_output = &tflite_learn_1166698_14_output,
 };
 
-const uint8_t ei_output_tensors_indices_1166698_12[1] = { 0 };
-const uint8_t ei_output_tensors_size_1166698_12 = 1;
-ei_learning_block_config_tflite_graph_t ei_learning_block_config_1166698_12 = {
+const uint8_t ei_output_tensors_indices_1166698_14[1] = { 0 };
+const uint8_t ei_output_tensors_size_1166698_14 = 1;
+ei_learning_block_config_tflite_graph_t ei_learning_block_config_1166698_14 = {
     .implementation_version = 1,
-    .block_id = 12,
-    .output_tensors_indices = ei_output_tensors_indices_1166698_12,
-    .output_tensors_size = ei_output_tensors_size_1166698_12,
+    .block_id = 14,
+    .output_tensors_indices = ei_output_tensors_indices_1166698_14,
+    .output_tensors_size = ei_output_tensors_size_1166698_14,
     .quantized = 1,
     .compiled = 1,
-    .graph_config = (void*)&ei_config_graph_1166698_12,
+    .graph_config = (void*)&ei_config_graph_1166698_14,
     .dequantize_output = 0,
 };
 
 const uint8_t ei_learning_blocks_1166698_1_size = 1;
-const uint32_t ei_learning_block_1166698_12_inputs[1] = { 11 };
-const uint8_t ei_learning_block_1166698_12_inputs_size = 1;
+const uint32_t ei_learning_block_1166698_14_inputs[1] = { 20 };
+const uint8_t ei_learning_block_1166698_14_inputs_size = 1;
 const ei_learning_block_t ei_learning_blocks_1166698_1[ei_learning_blocks_1166698_1_size] = {
     {
-        12,
+        14,
         &run_nn_inference,
-        (void*)&ei_learning_block_config_1166698_12,
+        (void*)&ei_learning_block_config_1166698_14,
         EI_CLASSIFIER_IMAGE_SCALING_NONE,
-        ei_learning_block_1166698_12_inputs,
-        ei_learning_block_1166698_12_inputs_size,
+        ei_learning_block_1166698_14_inputs,
+        ei_learning_block_1166698_14_inputs_size,
     },
 };
 
-ei_fill_result_classification_i8_config_t ei_fill_result_classification_i8_config_1166698_12 = {
+ei_fill_result_classification_i8_config_t ei_fill_result_classification_i8_config_1166698_14 = {
     .zero_point = -128,
     .scale = 0.00390625,
     .add_softmax = false
@@ -132,14 +132,14 @@ ei_fill_result_classification_i8_config_t ei_fill_result_classification_i8_confi
 const size_t ei_postprocessing_blocks_1166698_1_size = 1;
 const ei_postprocessing_block_t ei_postprocessing_blocks_1166698_1[ei_postprocessing_blocks_1166698_1_size] = {
     {
-        .block_id = 12,
+        .block_id = 14,
         .type = EI_CLASSIFIER_MODE_CLASSIFICATION,
         .init_fn = NULL,
         .deinit_fn = NULL,
         .postprocess_fn = &process_classification_i8,
         .display_fn = NULL,
-        .config = (void*)&ei_fill_result_classification_i8_config_1166698_12,
-        .input_block_id = 12
+        .config = (void*)&ei_fill_result_classification_i8_config_1166698_14,
+        .input_block_id = 14
     },
 };
 
@@ -153,7 +153,7 @@ const ei_impulse_t impulse_1166698_1 = {
     .project_name = "reconocimiento_de_voz_robot",
     .impulse_id = 1,
     .impulse_name = "Impulse #1",
-    .deploy_version = 5,
+    .deploy_version = 6,
 
     .nn_input_frame_size = 637,
     .raw_sample_count = 16000,

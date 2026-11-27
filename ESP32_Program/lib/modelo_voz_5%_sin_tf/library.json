@@ -1,5 +1,5 @@
 {
-  "name": "ei-reconocimiento_de_voz_robot",
+  "name": "modelo_voz_5%_sin_tf",
   "version": "1.0.5",
   "build": {
     "srcFilter": [

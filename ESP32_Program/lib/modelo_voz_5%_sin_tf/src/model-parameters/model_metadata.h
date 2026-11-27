@@ -88,7 +88,7 @@
 #define EI_CLASSIFIER_PROJECT_ID                 1166698
 #define EI_CLASSIFIER_PROJECT_OWNER              "kokshid27"
 #define EI_CLASSIFIER_PROJECT_NAME               "reconocimiento_de_voz_robot"
-#define EI_CLASSIFIER_PROJECT_DEPLOY_VERSION     5
+#define EI_CLASSIFIER_PROJECT_DEPLOY_VERSION     6
 #define EI_CLASSIFIER_NN_INPUT_FRAME_SIZE        637
 #define EI_CLASSIFIER_RAW_SAMPLE_COUNT           16000
 #define EI_CLASSIFIER_RAW_SAMPLES_PER_FRAME      1
